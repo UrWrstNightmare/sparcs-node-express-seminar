@@ -1,18 +1,22 @@
 import React from "react";
 import axios from "axios";
 import { SAPIBase } from "../tools/api";
+import Header from "../components/header";
+import "./css/feed.css";
 
-interface IAPIResponse  { title: string, content: string }
+interface IAPIResponse  { id: number, title: string, content: string }
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
+  const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
+  const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
 
   React.useEffect( () => {
     let BComponentExited = false;
     const asyncFun = async () => {
       // const { data } = await axios.get<IAPIResponse[]>( SAPIBase + `/getFeed?count=${ NPostCount }`);
-      const data = [ { title: "test1", content: "Example body" }, { title: "test2", content: "Example body" }, { title: "test3", content: "Example body" } ].slice(0, NPostCount);
+      const data = [ { id: 0, title: "test1", content: "Example body" }, { id: 1, title: "test2", content: "Example body" }, { id: 2, title: "test3", content: "Example body" } ].slice(0, NPostCount);
       if (BComponentExited) return;
       setLAPIResponse(data);
     };
@@ -20,22 +24,49 @@ const FeedPage = (props: {}) => {
     return () => { BComponentExited = true; }
   }, [ NPostCount ]);
 
+  const createNewPost = () => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/postFeed', { title: SNewPostTitle, content: SNewPostContent } );
+      setNPostCount(NPostCount + 1);
+      setSNewPostTitle("");
+      setSNewPostContent("");
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
+  const deletePost = (id: string) => {
+    const asyncFun = async () => {
+      // One can set X-HTTP-Method header to DELETE to specify deletion as well
+      await axios.post( SAPIBase + '/deleteFeed', { id: id } );
+      setNPostCount(Math.max(NPostCount - 1, 0));
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
   return (
-    <div className="App">
-      <h1>Feed</h1>
+    <div className="Feed">
+      <Header/>
+      <h2>Feed</h2>
       <div className={"feed-length-input"}>
-        # of posts to show:
-        <input type={"number"} value={ NPostCount } id={"post-count-input"}
+        Number of posts to show: &nbsp;&nbsp;
+        <input type={"number"} value={ NPostCount } id={"post-count-input"} min={0}
                onChange={ (e) => setNPostCount( parseInt(e.target.value) ) }
         />
       </div>
       <div className={"feed-list"}>
         { LAPIResponse.map( (val, i) =>
           <div key={i} className={"feed-item"}>
-            <h2 className={"feed-title"}>{ val.title }</h2>
+            <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
+            <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
           </div>
         ) }
+        <div className={"feed-item-add"}>
+          Title: <input type={"text"} value={SNewPostTitle} onChange={(e) => setSNewPostTitle(e.target.value)}/>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          Content: <input type={"text"} value={SNewPostContent} onChange={(e) => setSNewPostContent(e.target.value)}/>
+          <div className={"post-add-button"} onClick={(e) => createNewPost()}>Add Post!</div>
+        </div>
       </div>
     </div>
   );

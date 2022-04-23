@@ -1,0 +1,44 @@
+.feed-list {
+    padding: 25px 10px;
+    width: calc(100% - 20px);
+    max-width: 800px;
+    margin: auto;
+}
+
+.feed-item {
+    border: solid 1px rgba(0,0,0,0.2);
+    border-radius: 15px;
+    width: 100%;
+    margin: 10px 0;
+    position: relative;
+}
+
+.feed-item-add {
+    border: dotted 1px black;
+    border-radius: 15px;
+    padding: 20px 10px 0 10px;
+}
+
+.post-add-button {
+    margin-top: 20px;
+    padding: 10px;
+    border-top: solid 1px rgba(0,0,0,0.1);
+}
+
+.post-add-button:hover {
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.delete-item {
+    position: absolute;
+    right: 15px;
+    top: 12px;
+    color: red;
+    font-size: 18px;
+}
+
+.delete-item:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
