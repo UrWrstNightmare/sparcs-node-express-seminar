@@ -1,0 +1,5 @@
+body {
+    min-width: 800px;
+    width: auto !important;
+    overflow: scroll;
+}
