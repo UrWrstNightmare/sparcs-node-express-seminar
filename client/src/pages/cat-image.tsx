@@ -7,7 +7,7 @@ const CatImagePage = () => {
     <div className={"cat-image"}>
       <Header/>
       <h2>Static *Cute* Image</h2>
-      <img src={ SAPIBase + "/static/cat.png" } className={"cat-image"}/>
+      <img alt={"cute cat"} src={ SAPIBase + "/static/cat.png" } className={"cat-image"}/>
       <p>Wow so cute from static</p>
     </div>
   );
