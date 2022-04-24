@@ -1,11 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const statusRouter = require('./routes/status');
 const feedRouter = require('./routes/feed');
+const accountRouter = require('./routes/account');
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT;
 
 app.use(express.json());
 
@@ -23,6 +25,7 @@ app.use(cors(corsOptions));
 
 app.use('/status', statusRouter);
 app.use('/feed', feedRouter);
+app.use('/account', accountRouter);
 
 app.listen(port, () => {
    console.log(`Example App Listening @ http://localhost:${ port }`);

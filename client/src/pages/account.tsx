@@ -7,7 +7,7 @@ import "./css/account.css";
 const AccountPage = () => {
   const [ SAPIKEY, setSAPIKEY ] = React.useState<string>("");
   const [ NBalance, setNBalance ] = React.useState<number | "Not Authorized">("Not Authorized");
-  const [ NTransaction, setNTransaction ] = React.useState<number>(0);
+  const [ NTransaction, setNTransaction ] = React.useState<number | ''>(0);
 
   const getAccountInformation = () => {
     const asyncFun = async() => {
@@ -18,10 +18,11 @@ const AccountPage = () => {
     asyncFun().catch((e) => window.alert(`AN ERROR OCCURED: ${e}`));
   }
 
-  const performTransaction = ( amount: number ) => {
+  const performTransaction = ( amount: number | '' ) => {
     const asyncFun = async() => {
+      if (amount === '') return;
       interface IAPIResponse { success: boolean, balance: number, msg: string };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: SAPIKEY, amount: NBalance });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: SAPIKEY, amount: amount });
       setNTransaction(0);
       if (!data.success) {
         window.alert('Transaction Failed:' + data.msg);
@@ -49,9 +50,9 @@ const AccountPage = () => {
           <p className={"balance-value " + (typeof(NBalance) === "number" ? (NBalance >= 0 ? "balance-positive" : "balance-negative") : "")}>₩ { NBalance }</p>
         </div>
         <div className={"transaction"}>
-          ₩ <input type={"number"} value={NTransaction} min={0} onChange={e => setNTransaction(parseInt(e.target.value))}/>
+          ₩ <input type={"number"} value={NTransaction} min={0} onChange={e => setNTransaction(e.target.value === '' ? '' : parseInt(e.target.value))}/>
           <button onClick={e => performTransaction(NTransaction)}>DEPOSIT</button>
-          <button onClick={e => performTransaction(NTransaction * -1)}>WITHDRAW</button>
+          <button onClick={e => performTransaction(NTransaction === '' ? '' : NTransaction * -1)}>WITHDRAW</button>
         </div>
       </div>
     </div>
