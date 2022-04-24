@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const statusRouter = require('./routes/status');
@@ -26,6 +27,8 @@ app.use(cors(corsOptions));
 app.use('/status', statusRouter);
 app.use('/feed', feedRouter);
 app.use('/account', accountRouter);
+
+app.use('/static', express.static(path.join(__dirname,'public')));
 
 app.listen(port, () => {
    console.log(`Example App Listening @ http://localhost:${ port }`);
