@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+
+const statusRouter = require('./routes/status');
+
 const app = express();
 const port = 8080;
 
@@ -17,13 +20,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.get('/', (req, res) => {
-    res.status(200).send('Hello, World!');
-});
-
-app.get('/status', (req, res) => {
-    res.status(200).json({ isOnline: true });
-})
+app.use('/status', statusRouter);
 
 app.listen(port, () => {
    console.log(`Example App Listening @ http://localhost:${ port }`);
