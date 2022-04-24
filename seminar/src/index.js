@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 const statusRouter = require('./routes/status');
+const feedRouter = require('./routes/feed');
 
 const app = express();
 const port = 8080;
@@ -21,6 +22,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/status', statusRouter);
+app.use('/feed', feedRouter);
 
 app.listen(port, () => {
    console.log(`Example App Listening @ http://localhost:${ port }`);

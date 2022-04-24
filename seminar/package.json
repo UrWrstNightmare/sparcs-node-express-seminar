@@ -4,7 +4,8 @@
   "description": "Backend for SPARCS Backend Seminar",
   "main": "index.js",
   "scripts": {
-    "start": "node src",
+    "start": "nodemon src",
+    "build": "node src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jiho Park",
@@ -12,5 +13,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }

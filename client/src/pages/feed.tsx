@@ -15,8 +15,9 @@ const FeedPage = (props: {}) => {
   React.useEffect( () => {
     let BComponentExited = false;
     const asyncFun = async () => {
-      // const { data } = await axios.get<IAPIResponse[]>( SAPIBase + `/getFeed?count=${ NPostCount }`);
-      const data = [ { id: 0, title: "test1", content: "Example body" }, { id: 1, title: "test2", content: "Example body" }, { id: 2, title: "test3", content: "Example body" } ].slice(0, NPostCount);
+      const { data } = await axios.get<IAPIResponse[]>( SAPIBase + `/feed/getFeed?count=${ NPostCount }`);
+      console.log(data);
+      // const data = [ { id: 0, title: "test1", content: "Example body" }, { id: 1, title: "test2", content: "Example body" }, { id: 2, title: "test3", content: "Example body" } ].slice(0, NPostCount);
       if (BComponentExited) return;
       setLAPIResponse(data);
     };
@@ -26,7 +27,7 @@ const FeedPage = (props: {}) => {
 
   const createNewPost = () => {
     const asyncFun = async () => {
-      await axios.post( SAPIBase + '/postFeed', { title: SNewPostTitle, content: SNewPostContent } );
+      await axios.post( SAPIBase + '/feed/addFeed', { title: SNewPostTitle, content: SNewPostContent } );
       setNPostCount(NPostCount + 1);
       setSNewPostTitle("");
       setSNewPostContent("");
@@ -37,7 +38,7 @@ const FeedPage = (props: {}) => {
   const deletePost = (id: string) => {
     const asyncFun = async () => {
       // One can set X-HTTP-Method header to DELETE to specify deletion as well
-      await axios.post( SAPIBase + '/deleteFeed', { id: id } );
+      await axios.post( SAPIBase + '/feed/deleteFeed', { id: id } );
       setNPostCount(Math.max(NPostCount - 1, 0));
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
