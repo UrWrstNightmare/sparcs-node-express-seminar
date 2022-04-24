@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Side Rendering</title>
+</head>
+<body>
+    <style>
+        body {
+            font-family: "Nanum Gothic", sans-serif;
+            text-align: center;
+        }
+    </style>
+    <h1>This HTML is being rendered in Node!</h1>
+    <h3>You have provided argument <%=arg%></h3>
+    <% if (arg === "easteregg") { %>
+        <p>Congratulations! You have found an easter egg!</p>
+    <% } %>
+</body>
+</html>
