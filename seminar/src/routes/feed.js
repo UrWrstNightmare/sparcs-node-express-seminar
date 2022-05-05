@@ -14,13 +14,17 @@ class FeedDB {
 
     constructor() { console.log("[Feed-DB] DB Init Completed"); }
 
-    selectItems = async ( count ) => {
+    selectItems = async ( count, search ) => {
         try {
             if (count === 0) return { success: true, data: [] };
+            // We'll Remove the Item Count Limit for Search... (Really, this is unnecessary)
+            /*
             const DBItemCount = await FeedModel.countDocuments();
             if (count > DBItemCount) return { success: false, data: "Too many items queried"  };
             if (count < 0) return { success: false, data: "Invalid count provided" };
-            const res = await FeedModel.find().sort({'createdAt': -1}).limit(count).exec();
+            */
+            const findArguments = search === "" ? {} : {$or: [ { title: { "$regex": search } }, { content: { "$regex": search } } ]};
+            const res = await FeedModel.find(findArguments).sort({'createdAt': -1}).limit(count).exec();
             return { success: true, data: res };
         } catch (e) {
             console.log(`[Feed-DB] Select Error: ${ e }`);
@@ -57,7 +61,8 @@ const feedDBInst = FeedDB.getInst();
 router.get('/getFeed', async (req, res) => {
     try {
         const requestCount = parseInt(req.query.count);
-        const dbRes = await feedDBInst.selectItems(requestCount);
+        const searchString = req.query.search;
+        const dbRes = await feedDBInst.selectItems(requestCount, searchString);
         if (dbRes.success) return res.status(200).json(dbRes.data);
         else return res.status(500).json({ error: dbRes.data })
     } catch (e) {
