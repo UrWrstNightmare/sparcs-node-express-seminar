@@ -1,12 +1,3 @@
----
-name: Express Homework Submission Template
-about: Express Homework Template
-title: 'Express Homework Submission by ...'
-labels: 'homework/submission, good first issue, well done'
-assignees: UrWrstNightmare
----
-
-
 ## Checklist
 
 - [ ] Example 1 (Feed) 에서 편집 기능 추가
