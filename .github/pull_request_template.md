@@ -1,5 +1,3 @@
-```
-
 ---
 name: Homework
 about: Complete Express Homework!
@@ -23,6 +21,4 @@ labels: homework
 
 ### 새로운 기능을 구현하면서 고민했거나, 어려웠던 점들에 대해 간략히 적어주세요
 
-- 
-
-```
+-
