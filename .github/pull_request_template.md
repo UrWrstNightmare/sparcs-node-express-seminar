@@ -1,7 +1,7 @@
 ---
 name: Express Homework Submission Template
 about: Express 과제 제출 PR 템플릿입니다
-title: Express Homework Submission by <your_username_here>
+title: 'Express Homework Submission by <your_username_here>'
 labels: 'homework/submission, good first issue, well done!'
 assignees: UrWrstNightmare
 ---
