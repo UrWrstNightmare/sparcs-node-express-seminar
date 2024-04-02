@@ -24,25 +24,3 @@ assignees: UrWrstNightmare
 ### 새로운 기능을 구현하면서 고민했거나, 어려웠던 점들에 대해 간략히 적어주세요
 
 - 
-
-
-```markdown
----
-name: Bug Report Template
-about: 버그 리포트 템플릿입니다.
-title: ''
-labels: 'Status: To Do, Priority: Medium, Type: Bugfix/Function, Type: Bugfix/UI'
-assignees: ''
----
-```
-
-
-```markdown
----
-name: Bug Report Template
-about: 버그 리포트 템플릿입니다.
-title: ''
-labels: 'Status: To Do, Priority: Medium, Type: Bugfix/Function, Type: Bugfix/UI'
-assignees: ''
----
-```
