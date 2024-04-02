@@ -1,8 +1,9 @@
 ---
-name: Homework
-about: Complete Express Homework!
-title: 'Express Homework by <your nickname here>'
-labels: homework
+name: Express Homework Submission Template
+about: Express 과제 제출 PR 템플릿입니다
+title: Express Homework Submission by <your_username_here>
+labels: 'homework/submission, good first issue, well done!'
+assignees: UrWrstNightmare
 ---
 
 ## Checklist
@@ -21,4 +22,26 @@ labels: homework
 
 ### 새로운 기능을 구현하면서 고민했거나, 어려웠던 점들에 대해 간략히 적어주세요
 
--
+- 
+
+
+```markdown
+---
+name: Bug Report Template
+about: 버그 리포트 템플릿입니다.
+title: ''
+labels: 'Status: To Do, Priority: Medium, Type: Bugfix/Function, Type: Bugfix/UI'
+assignees: ''
+---
+```
+
+
+```markdown
+---
+name: Bug Report Template
+about: 버그 리포트 템플릿입니다.
+title: ''
+labels: 'Status: To Do, Priority: Medium, Type: Bugfix/Function, Type: Bugfix/UI'
+assignees: ''
+---
+```
