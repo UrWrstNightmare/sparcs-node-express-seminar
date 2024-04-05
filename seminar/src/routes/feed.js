@@ -36,6 +36,24 @@ class FeedDB {
         if (BItemDeleted) id--;
         return BItemDeleted;
     }
+
+    modifyItem = ( item ) => {
+        let BItemModified = false;
+
+        const { id, title, content } = item;
+        const num_id = parseInt(id);
+
+        this.#LDataDB = this.#LDataDB.forEach((value) => {
+            const match = (value.id == num_id);
+            if (match) {
+                value.title = title;
+                value.content = content;
+                BItemModified = true;
+            }
+        });
+
+        return BItemModified;
+    }
 }
 
 const feedDBInst = FeedDB.getInst();
@@ -55,7 +73,7 @@ router.post('/addFeed', (req, res) => {
    try {
        const { title, content } = req.body;
        const addResult = feedDBInst.insertItem({ title, content });
-       if (!addResult) return res.status(500).json({ error: dbRes.data })
+       if (!addResult) return res.status(500).json({ error: addResult.data })
        else return res.status(200).json({ isOK: true });
    } catch (e) {
        return res.status(500).json({ error: e });
@@ -67,10 +85,21 @@ router.post('/deleteFeed', (req, res) => {
         const { id } = req.body;
         const deleteResult = feedDBInst.deleteItem(parseInt(id));
         if (!deleteResult) return res.status(500).json({ error: "No item deleted" })
-        else return res.status(200).json({ isOK: true });
+        else return res.status(200).json({ isDeleteOK: true });
     } catch (e) {
         return res.status(500).json({ error: e });
     }
-})
+});
+
+router.post('/modifyFeed', (req, res) => {
+    try {
+        const { id, title, content } = req.body;
+        const modifyResult = feedDBInst.modifyItem({ id, title, content });
+        if (!modifyResult) return res.status(500).json({ error: "No item modified" })
+        else return res.status(200).json({ isModifyOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+});
 
 module.exports = router;
