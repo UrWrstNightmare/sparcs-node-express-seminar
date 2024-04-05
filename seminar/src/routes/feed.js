@@ -43,11 +43,11 @@ class FeedDB {
         const { id, title, content } = item;
         const num_id = parseInt(id);
 
-        this.#LDataDB = this.#LDataDB.forEach((value) => {
+        this.#LDataDB.forEach((value) => {
             const match = (value.id == num_id);
             if (match) {
-                value.title = title;
-                value.content = content;
+                this.#LDataDB[value.id].title = title;
+                this.#LDataDB[value.id].content = content;
                 BItemModified = true;
             }
         });
