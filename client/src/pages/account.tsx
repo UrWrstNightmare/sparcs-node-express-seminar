@@ -114,11 +114,14 @@ const AccountPage = () => {
         </div>
       </div>
 
-      <div className={"account-book-title"}><h2>가계부</h2></div>
+      <div className={"account-book-title"}>
+        <h2>가계부</h2>
+        <p>수입 / 지출을 기록해 보세요.</p>
+      </div>
       <div className={"account-book-input"}>
-        지출 금액 <input type={"number"} value={spend} onChange={e => setSPEND(e.target.value)} className={"input-spend"}/> 원
+        금액 <input type={"number"} value={spend} onChange={e => setSPEND(e.target.value)} className={"input-spend"}/> 원
         <br />
-        지출 내역 <input type={"text"} value={purpose} onChange={e => setPURPOSE(e.target.value)} className={"input-purpose"}/>
+        내역 <input type={"text"} value={purpose} onChange={e => setPURPOSE(e.target.value)} className={"input-purpose"}/>
         <button className={"book-add-button"} onClick={(e) => createNewPost()}>OK</button>
       </div>
       
