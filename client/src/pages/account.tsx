@@ -48,7 +48,7 @@ const AccountPage = () => {
       interface IAPIResponse { success: boolean, balance: number, msg: string };
       const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credentialID: username, credentialPW: password, amount: amount });
 
-      if (amount < 0) setSPEND("" + amount);
+      setSPEND("" + amount);
 
       setNTransaction(0);
       if (!data.success) {
