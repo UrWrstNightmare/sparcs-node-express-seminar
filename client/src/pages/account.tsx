@@ -6,13 +6,15 @@ import "./css/account.css";
 
 const AccountPage = () => {
   const [ SAPIKEY, setSAPIKEY ] = React.useState<string>("");
+  const [ SID, setID ] = React.useState<string>("");
+  const [ SPASSWD, setPASSWD ] = React.useState<string>("");
   const [ NBalance, setNBalance ] = React.useState<number | "Not Authorized">("Not Authorized");
   const [ NTransaction, setNTransaction ] = React.useState<number | ''>(0);
 
   const getAccountInformation = () => {
     const asyncFun = async() => {
       interface IAPIResponse { balance: number };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { credential: SAPIKEY });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { id: SID, passwd: SPASSWD });
       setNBalance(data.balance);
     }
     asyncFun().catch((e) => window.alert(`AN ERROR OCCURED: ${e}`));
@@ -22,7 +24,7 @@ const AccountPage = () => {
     const asyncFun = async() => {
       if (amount === '') return;
       interface IAPIResponse { success: boolean, balance: number, msg: string };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: SAPIKEY, amount: amount });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', {id: SID, passwd: SPASSWD, amount: amount });
       setNTransaction(0);
       if (!data.success) {
         window.alert('Transaction Failed:' + data.msg);
@@ -39,8 +41,15 @@ const AccountPage = () => {
     <div className={"account"}>
       <Header/>
       <h2>Account</h2>
-      <div className={"account-token-input"}>
+      {/* <div className={"account-token-input"}>
         Enter API Key: <input type={"text"} value={SAPIKEY} onChange={e => setSAPIKEY(e.target.value)}/>
+        <button onClick={e => getAccountInformation()}>GET</button>
+      </div> */}
+      <div className={"account-id-input"}>
+        Enter User Name: <input type={"text"} value={SID} onChange={e => setID(e.target.value)}/>
+      </div>
+      <div className={"account-passwd-input"}>
+        Enter Password: <input type={"text"} value={SPASSWD} onChange={e => setPASSWD(e.target.value)}/>
         <button onClick={e => getAccountInformation()}>GET</button>
       </div>
       <div className={"account-bank"}>
