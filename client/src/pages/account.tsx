@@ -46,7 +46,7 @@ const AccountPage = () => {
       interface IAPIResponse { success: boolean, balance: number, msg: string };
       const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credentialID: username, credentialPW: password, amount: amount });
 
-      if (amount < 0) setSPEND("" + (-1) * amount);
+      if (amount < 0) setSPEND("" + amount);
 
       setNTransaction(0);
       if (!data.success) {
@@ -125,7 +125,7 @@ const AccountPage = () => {
             <div className={"modify-book-item"} onClick={(e) => modifyPost(`${val.id}`)}>✎</div>
             <div className={"delete-book-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             
-            <h3 className={"book-title"}>{ val.spend }</h3>
+            <h3 className={"book-title"}>{ val.spend } 원</h3>
             <p className={"book-body"}>{ val.purpose }</p>
           </div>
         ) 

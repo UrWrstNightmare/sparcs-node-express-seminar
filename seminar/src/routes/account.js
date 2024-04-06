@@ -32,7 +32,7 @@ class BookDB {
         return BookDB._inst_;
     }
     
-    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body" }];
+    #id = 0; #itemCount = 0; #LDataDB = [];
 
     selectItems = () => {
         return { success: true, data: this.#LDataDB }
