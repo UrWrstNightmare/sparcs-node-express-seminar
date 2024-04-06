@@ -36,6 +36,17 @@ class FeedDB {
         if (BItemDeleted) id--;
         return BItemDeleted;
     }
+
+    editItem = ( id, item ) => {
+        const { title, content } = item;
+        this.#LDataDB = this.#LDataDB.map((value) => {
+            if (value.id === id) {
+                value.title = title;
+                value.content = content;
+            }
+            return value;
+        });
+    }
 }
 
 const feedDBInst = FeedDB.getInst();
@@ -68,6 +79,16 @@ router.post('/deleteFeed', (req, res) => {
         const deleteResult = feedDBInst.deleteItem(parseInt(id));
         if (!deleteResult) return res.status(500).json({ error: "No item deleted" })
         else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+})
+
+router.post('/editFeed', (req, res) => {
+    try {
+        const { id, title, content } = req.body;
+        feedDBInst.editItem(parseInt(id), { title, content });
+        return res.status(200).json({ isOK: true });
     } catch (e) {
         return res.status(500).json({ error: e });
     }
