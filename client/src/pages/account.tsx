@@ -5,14 +5,15 @@ import {SAPIBase} from "../tools/api";
 import "./css/account.css";
 
 const AccountPage = () => {
-  const [ SAPIKEY, setSAPIKEY ] = React.useState<string>("");
+  const [ SAPIUSERID, setSAPIUSERID ] = React.useState<string>(""); // User ID
+  const [ SAPIPASSWORD, setSAPIPASSWORD ] = React.useState<string>(""); // Password
   const [ NBalance, setNBalance ] = React.useState<number | "Not Authorized">("Not Authorized");
   const [ NTransaction, setNTransaction ] = React.useState<number | ''>(0);
 
   const getAccountInformation = () => {
     const asyncFun = async() => {
       interface IAPIResponse { balance: number };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { credential: SAPIKEY });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { userId: SAPIUSERID, password: SAPIPASSWORD });
       setNBalance(data.balance);
     }
     asyncFun().catch((e) => window.alert(`AN ERROR OCCURED: ${e}`));
@@ -22,7 +23,7 @@ const AccountPage = () => {
     const asyncFun = async() => {
       if (amount === '') return;
       interface IAPIResponse { success: boolean, balance: number, msg: string };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: SAPIKEY, amount: amount });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { userId: SAPIUSERID, password: SAPIPASSWORD, amount: amount });
       setNTransaction(0);
       if (!data.success) {
         window.alert('Transaction Failed:' + data.msg);
@@ -39,10 +40,13 @@ const AccountPage = () => {
     <div className={"account"}>
       <Header/>
       <h2>Account</h2>
-      <div className={"account-token-input"}>
-        Enter API Key: <input type={"text"} value={SAPIKEY} onChange={e => setSAPIKEY(e.target.value)}/>
-        <button onClick={e => getAccountInformation()}>GET</button>
+      <div className={"account-username-input"}>
+        Enter User ID: <input type={"text"} value={SAPIUSERID} onChange={e => setSAPIUSERID(e.target.value)}/>
       </div>
+      <div className={"account-password-input"}>
+        Enter Password: <input type={"password"} value={SAPIPASSWORD} onChange={e => setSAPIPASSWORD(e.target.value)}/>
+      </div>
+      <button onClick={e => getAccountInformation()}>GET</button>
       <div className={"account-bank"}>
         <h3>The National Bank of SPARCS API</h3>
         <div className={"balance"}>

@@ -1,5 +1,6 @@
 const authMiddleware = (req, res, next) => {
-    if (req.body.credential === process.env.API_KEY) {
+    const { userId, password } = req.body; // Destructure user ID and password from the request body
+    if (userId === process.env.API_USERID && password === process.env.API_PASSWORD) { // Check if the user ID and password match the expected values
         console.log("[AUTH-MIDDLEWARE] Authorized User");
         next();
     }
