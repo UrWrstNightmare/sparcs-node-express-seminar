@@ -39,13 +39,9 @@ const HomePage = (props: {}) => {
             <div className={"page-subtitle"}>Example #2</div>
             <div className={"page-title"}>Middleware & Authorization</div>
           </div>
-          <div className={"page-link"} onClick={ () => navigate("/cat-image") }>
-            <div className={"page-subtitle"}>Example #3</div>
-            <div className={"page-title"}>Serve *Cute* Image Files</div>
-          </div>
-          <div className={"page-link"} onClick={ () => navigate("/ssr") }>
-            <div className={"page-subtitle"}>Example #4</div>
-            <div className={"page-title"}>Server Side Rendering</div>
+          <div className={"page-link"} onClick={ () => navigate("/kawaii-stagram") }>
+            <div className={"page-subtitle"}>cyber's example</div>
+            <div className={"page-title"}>Kawaii-stagram</div>
           </div>
         </div>
       </div>

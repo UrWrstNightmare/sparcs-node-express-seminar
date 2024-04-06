@@ -7,7 +7,7 @@ import PageNotFound from "./pages/404";
 import Footer from "./components/footer";
 import './App.css';
 import AccountPage from "./pages/account";
-import CatImagePage from "./pages/cat-image";
+import KawaiiStagram from "./pages/kawaii-stagram";
 
 
 const App = () => {
@@ -18,7 +18,7 @@ const App = () => {
           <Route path="/" element={ <HomePage/> }/>
           <Route path="/feed" element={ <FeedPage/> }/>
           <Route path="/account" element={ <AccountPage/> }/>
-          <Route path="/cat-image" element={ <CatImagePage/> }/>
+          <Route path="/kawaii-stagram" element={ <KawaiiStagram/> }/>
           <Route path="/ssr" element={ <SSRPage/> }/>
           <Route path="*" element={ <PageNotFound/> }/>
         </Routes>

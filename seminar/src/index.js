@@ -5,6 +5,7 @@ require('dotenv').config();
 const statusRouter = require('./routes/status');
 const feedRouter = require('./routes/feed');
 const accountRouter = require('./routes/account');
+const kawaiiStagramRouter = require('./routes/kawaii-stagram');
 
 const app = express();
 const port = process.env.PORT;
@@ -26,6 +27,7 @@ app.use(cors(corsOptions));
 app.use('/status', statusRouter);
 app.use('/feed', feedRouter);
 app.use('/account', accountRouter);
+app.use('/kawaii-stagram', kawaiiStagramRouter);
 
 app.listen(port, () => {
    console.log(`Example App Listening @ http://localhost:${ port }`);
