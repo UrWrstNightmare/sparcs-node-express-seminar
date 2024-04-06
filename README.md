@@ -2,6 +2,7 @@
 Repository for Node / Express Seminar @ SPARCS
 
 Code by [Jiho Park](https://github.com/UrWrstNightmare) (Night @ SPARCS)
+Finished by [Sé Bang](https://github.com/sciberbee) (cyber @ SPARCS)
 
 ---
 ### Folder Structure
@@ -11,3 +12,8 @@ Code by [Jiho Park](https://github.com/UrWrstNightmare) (Night @ SPARCS)
 
 
 ### How to Run
+change to example2 branch
+and run 2 commands in both 'seminar' and 'client' directories:
+
+npm install
+npm start
