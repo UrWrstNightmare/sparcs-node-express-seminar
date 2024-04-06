@@ -8,9 +8,11 @@ interface IAPIResponse  { id: number, title: string, content: string }
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
-  const [ NPostCount, setNPostCount ] = React.useState<number>(0);
+  const [ NPostCount, setNPostCount ] = React.useState<number>(1);
+  const [ NEditPostId, setNEditPostId ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
+  const [ SEditPostContent, setSEditPostContent ] = React.useState<string>("");
 
   React.useEffect( () => {
     let BComponentExited = false;
@@ -35,6 +37,15 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
+  const editPost = () => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/feed/updateFeed', { id: NEditPostId, content: SEditPostContent } );
+      const { data } = await axios.get<IAPIResponse[]>( SAPIBase + `/feed/getFeed?count=${ NPostCount }`);
+      setLAPIResponse(data);
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
   const deletePost = (id: string) => {
     const asyncFun = async () => {
       // One can set X-HTTP-Method header to DELETE to specify deletion as well
@@ -53,6 +64,14 @@ const FeedPage = (props: {}) => {
         <input type={"number"} value={ NPostCount } id={"post-count-input"} min={0}
                onChange={ (e) => setNPostCount( parseInt(e.target.value) ) }
         />
+        <br />
+        Edit Post #id: &nbsp;&nbsp;
+        <input type={"number"} id={"post-edit-id-input"} value={NEditPostId} onChange={(e) => setNEditPostId(parseInt(e.target.value))} />
+        <br />
+        New content: &nbsp;&nbsp;
+        <input type={"text"} id={"post-edit-content-input"} value={SEditPostContent} onChange={(e) => setSEditPostContent(e.target.value)} />
+        <br />
+        <button onClick={(e) => editPost()}>Edit Post!</button>
       </div>
       <div className={"feed-list"}>
         { LAPIResponse.map( (val, i) =>

@@ -26,6 +26,18 @@ class FeedDB {
         return true;
     }
 
+    updateItem = ( id, content ) => {
+        let BItemEdited = false;
+        this.#LDataDB = this.#LDataDB.map((value) => {
+            if (value.id === id) {
+                value.content = content;
+                BItemEdited = true;
+            }
+            return value;
+        });
+        return BItemEdited;
+    }
+
     deleteItem = ( id ) => {
         let BItemDeleted = false;
         this.#LDataDB = this.#LDataDB.filter((value) => {
@@ -62,6 +74,18 @@ router.post('/addFeed', (req, res) => {
    }
 });
 
+router.post('/updateFeed', (req, res) => {
+    try {
+        const { id, content } = req.body;
+        const Nid = parseInt(id);
+        const updateResult = feedDBInst.updateItem( Nid, content );
+        if (!updateResult) return res.status(500).json({ error: { Nid, content, updateResult } })
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+ });
+ 
 router.post('/deleteFeed', (req, res) => {
     try {
         const { id } = req.body;
