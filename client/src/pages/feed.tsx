@@ -44,6 +44,21 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
+  const editPost = (id: string, newTitle: string, newContent: string) => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/feed/editFeed', { id: id, title: newTitle, content: newContent } );
+      const updatedPosts = LAPIResponse.map( (val) => {
+        if (val.id === parseInt(id)) {
+          val.title = newTitle;
+          val.content = newContent;
+        }
+        return val;
+      });
+      setLAPIResponse(updatedPosts);
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
   return (
     <div className="Feed">
       <Header/>
@@ -58,6 +73,11 @@ const FeedPage = (props: {}) => {
         { LAPIResponse.map( (val, i) =>
           <div key={i} className={"feed-item"}>
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
+            <div className={"edit-item"} onClick={(e) => {
+              const newTitle = window.prompt("Enter the new title", val.title);
+              const newContent = window.prompt("Enter the new content", val.content);
+              if (newTitle && newContent) editPost(`${val.id}`, newTitle, newContent);
+            }}>🖍️</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
           </div>
