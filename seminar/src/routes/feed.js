@@ -9,7 +9,7 @@ class FeedDB {
         return FeedDB._inst_;
     }
 
-    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body" }];
+    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body", likes: 0 }];
 
     constructor() { console.log("[Feed-DB] DB Init Completed"); }
 
@@ -20,8 +20,8 @@ class FeedDB {
     }
 
     insertItem = ( item ) => {
-        const { title, content } = item;
-        this.#LDataDB.push({ id: this.#id, title, content });
+        const { title, content, likes } = item;
+        this.#LDataDB.push({ id: this.#id, title, content, likes });
         this.#id++; this.#itemCount++;
         return true;
     }
@@ -46,6 +46,15 @@ class FeedDB {
             return value;
         });
     }
+
+    updateLikes = (id , likes) => {
+        this.#LDataDB = this.#LDataDB.map((value) => {
+            if (value.id === id) {
+                value.likes += 1;
+            }
+            return value;
+        });
+    }
 }
 
 const feedDBInst = FeedDB.getInst();
@@ -63,8 +72,8 @@ router.get('/getFeed', (req, res) => {
 
 router.post('/addFeed', (req, res) => {
    try {
-       const { title, content } = req.body;
-       const addResult = feedDBInst.insertItem({ title, content });
+       const { title, content, likes } = req.body;
+       const addResult = feedDBInst.insertItem({ title, content, likes });
        if (!addResult) return res.status(500).json({ error: dbRes.data })
        else return res.status(200).json({ isOK: true });
    } catch (e) {
@@ -87,6 +96,16 @@ router.post('/editFeed', (req, res) => {
     try {
         const { id, title, content } = req.body;
         feedDBInst.editItem(parseInt(id), title, content);
+        return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+})
+
+router.post('/updateLikes', (req, res) => {
+    try {
+        const { id, likes } = req.body;
+        feedDBInst.updateLikes(parseInt(id), likes);
         return res.status(200).json({ isOK: true });
     } catch (e) {
         return res.status(500).json({ error: e });
