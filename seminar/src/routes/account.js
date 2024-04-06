@@ -62,14 +62,14 @@ class BookDB {
     modifyItem = ( item ) => {
         let BItemModified = false;
 
-        const { id, title, content } = item;
+        const { id, spend, purpose } = item;
         const num_id = parseInt(id);
 
         this.#LDataDB.forEach((value) => {
             const match = (value.id == num_id);
             if (match) {
-                this.#LDataDB[value.id].title = title;
-                this.#LDataDB[value.id].content = content;
+                this.#LDataDB[value.id].spend = spend;
+                this.#LDataDB[value.id].purpose = purpose;
                 BItemModified = true;
             }
         });
@@ -137,8 +137,8 @@ router.post('/deleteBook', (req, res) => {
 
 router.post('/modifyBook', (req, res) => {
     try {
-        const { id, title, content } = req.body;
-        const modifyResult = bookDBInst.modifyItem({ id, title, content });
+        const { id, spend, purpose } = req.body;
+        const modifyResult = bookDBInst.modifyItem({ id, spend, purpose });
         if (!modifyResult) return res.status(500).json({ error: "No item modified" })
         else return res.status(200).json({ isModifyOK: true });
     } catch (e) {

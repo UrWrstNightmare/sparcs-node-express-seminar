@@ -9,12 +9,14 @@ interface IAPIResponse  { id: number, spend: string, purpose: string }
 const AccountPage = () => {
   const [ password, setPASSWORD ] = React.useState<string>("");
   const [ username, setUSERNAME ] = React.useState<string>("");
+  const [ spend, setSPEND ] = React.useState<string>("");
+  const [ purpose, setPURPOSE ] = React.useState<string>("");
   const [ NBalance, setNBalance ] = React.useState<number | "Not Authorized">("Not Authorized");
   const [ NTransaction, setNTransaction ] = React.useState<number | ''>(0);
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
-  const [ spend, setSPEND ] = React.useState<string>("");
-  const [ purpose, setPURPOSE ] = React.useState<string>("");
+  const [ NModifyCount, setNModifyCount ] = React.useState<number>(0);
+  
   
   React.useEffect( () => {
     let BComponentExited = false;
@@ -27,7 +29,7 @@ const AccountPage = () => {
     };
     asyncFun().catch((e) => window.alert(`Error while running API Call: ${e}`));
     return () => { BComponentExited = true; }
-  }, [ NPostCount ]);
+  }, [ NPostCount, NModifyCount ]);
 
   
 
@@ -84,6 +86,7 @@ const AccountPage = () => {
       await axios.post( SAPIBase + '/account/modifyBook', { id: id, spend: spend, purpose: purpose } );
       setSPEND("");
       setPURPOSE("");
+      setNModifyCount(NModifyCount + 1);
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }

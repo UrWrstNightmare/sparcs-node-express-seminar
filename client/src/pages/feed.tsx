@@ -9,6 +9,7 @@ interface IAPIResponse  { id: number, title: string, content: string }
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
+  const [ NModifyCount, setNModifyCount ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
 
@@ -23,7 +24,7 @@ const FeedPage = (props: {}) => {
     };
     asyncFun().catch((e) => window.alert(`Error while running API Call: ${e}`));
     return () => { BComponentExited = true; }
-  }, [ NPostCount ]);
+  }, [ NPostCount, NModifyCount ]);
 
   const createNewPost = () => {
     const asyncFun = async () => {
@@ -49,6 +50,7 @@ const FeedPage = (props: {}) => {
       await axios.post( SAPIBase + '/feed/modifyFeed', { id: id, title: SNewPostTitle, content: SNewPostContent } );
       setSNewPostTitle("");
       setSNewPostContent("");
+      setNModifyCount(NModifyCount + 1);
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
