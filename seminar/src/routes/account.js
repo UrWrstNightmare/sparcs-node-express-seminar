@@ -12,6 +12,7 @@ class BankDB {
 
     #total = 10000;
 
+
     constructor() { console.log("[Bank-DB] DB Init Completed"); }
 
     getBalance = () => {
@@ -24,7 +25,62 @@ class BankDB {
     }
 }
 
+class BookDB {
+    static _inst_;
+    static getInst = () => {
+        if ( !BookDB._inst_ ) BookDB._inst_ = new BookDB();
+        return BookDB._inst_;
+    }
+    
+    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body" }];
+
+    selectItems = () => {
+        return { success: true, data: this.#LDataDB }
+    }
+
+    insertItem = ( item ) => {
+        const { spend, purpose } = item;
+        this.#LDataDB.push({ id: this.#id, spend, purpose });
+        this.#id++; this.#itemCount++;
+        return true;
+    }
+
+    deleteItem = ( id ) => {
+        let BItemDeleted = false;
+        this.#LDataDB = this.#LDataDB.filter((value) => {
+            const match = (value.id === id);
+            if (match) BItemDeleted = true;
+            return !match;
+        });
+        if (BItemDeleted) {
+            id--;
+            this.#id--;
+        }
+        return BItemDeleted;
+    }
+
+    modifyItem = ( item ) => {
+        let BItemModified = false;
+
+        const { id, title, content } = item;
+        const num_id = parseInt(id);
+
+        this.#LDataDB.forEach((value) => {
+            const match = (value.id == num_id);
+            if (match) {
+                this.#LDataDB[value.id].title = title;
+                this.#LDataDB[value.id].content = content;
+                BItemModified = true;
+            }
+        });
+
+        return BItemModified;
+    }
+}
+
+
 const bankDBInst = BankDB.getInst();
+const bookDBInst = BookDB.getInst();
 
 router.post('/getInfo', authMiddleware, (req, res) => {
     try {
@@ -47,4 +103,46 @@ router.post('/transaction', authMiddleware, (req, res) => {
     }
 })
 
+router.get('/getBook', (req, res) => {
+    try {
+        const dbRes = bookDBInst.selectItems();
+        if (dbRes.success) return res.status(200).json(dbRes.data);
+        else return res.status(500).json({ error: dbRes.data })
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+});
+
+router.post('/addBook', (req, res) => {
+    try {
+        const { spend, purpose } = req.body;
+        const addResult = bookDBInst.insertItem({ spend, purpose });
+        if (!addResult) return res.status(500).json({ error: addResult.data })
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+ });
+
+router.post('/deleteBook', (req, res) => {
+    try {
+        const { id } = req.body;
+        const deleteResult = bookDBInst.deleteItem(parseInt(id));
+        if (!deleteResult) return res.status(500).json({ error: "No item deleted" })
+        else return res.status(200).json({ isDeleteOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+});
+
+router.post('/modifyBook', (req, res) => {
+    try {
+        const { id, title, content } = req.body;
+        const modifyResult = bookDBInst.modifyItem({ id, title, content });
+        if (!modifyResult) return res.status(500).json({ error: "No item modified" })
+        else return res.status(200).json({ isModifyOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+});
 module.exports = router;
