@@ -38,6 +38,23 @@ class FeedDB {
         return BItemEdited;
     }
 
+    duplicateItem = ( id ) => {
+        let BItemFound = false;
+        let OItem = null;
+        this.#LDataDB = this.#LDataDB.map((value) => {
+            if (value.id === id) {
+                BItemFound = true;
+                OItem = value;
+            }
+            return value;
+        });
+        if (BItemFound) {
+            this.#LDataDB.push({id: this.#id, title: OItem.title, content: OItem.content});
+            this.#id++; this.#itemCount++;
+        }
+        return BItemFound;
+    }
+
     deleteItem = ( id ) => {
         let BItemDeleted = false;
         this.#LDataDB = this.#LDataDB.filter((value) => {
@@ -84,7 +101,19 @@ router.post('/updateFeed', (req, res) => {
     } catch (e) {
         return res.status(500).json({ error: e });
     }
- });
+});
+
+router.post('/duplicateFeed', (req, res) => {
+    try {
+        const { id } = req.body;
+        const Nid = parseInt(id);
+        const updateResult = feedDBInst.duplicateItem( Nid );
+        if (!updateResult) return res.status(500).json({ error: { Nid, updateResult } })
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+});
  
 router.post('/deleteFeed', (req, res) => {
     try {
@@ -95,6 +124,6 @@ router.post('/deleteFeed', (req, res) => {
     } catch (e) {
         return res.status(500).json({ error: e });
     }
-})
+});
 
 module.exports = router;

@@ -46,6 +46,18 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
+  const duplicatePost = (id: string) => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/feed/duplicateFeed', { id: id } );
+      setNPostCount(NPostCount + 1);
+      setSNewPostTitle("");
+      setSNewPostContent("");
+      const { data } = await axios.get<IAPIResponse[]>( SAPIBase + `/feed/getFeed?count=${ NPostCount }`);
+      setLAPIResponse(data);
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
   const deletePost = (id: string) => {
     const asyncFun = async () => {
       // One can set X-HTTP-Method header to DELETE to specify deletion as well
@@ -61,7 +73,7 @@ const FeedPage = (props: {}) => {
       <h2>Feed</h2>
       <div className={"feed-length-input"}>
         Number of posts to show: &nbsp;&nbsp;
-        <input type={"number"} value={ NPostCount } id={"post-count-input"} min={0}
+        <input type={"number"} value={ NPostCount } id={"post-count-input"} min={0} readOnly={true}
                onChange={ (e) => setNPostCount( parseInt(e.target.value) ) }
         />
         <br />
@@ -76,6 +88,7 @@ const FeedPage = (props: {}) => {
       <div className={"feed-list"}>
         { LAPIResponse.map( (val, i) =>
           <div key={i} className={"feed-item"}>
+            <div className={"duplicate-item"} onClick={(e) => duplicatePost(`${val.id}`)}>⎘</div>
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>

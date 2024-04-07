@@ -30,6 +30,19 @@
     font-weight: 700;
 }
 
+.duplicate-item {
+    position: absolute;
+    right: 40px;
+    top: 15px;
+    color: blue;
+    font-size: 18px;
+}
+
+.duplicate-item:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .delete-item {
     position: absolute;
     right: 15px;
