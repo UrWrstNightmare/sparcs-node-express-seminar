@@ -22,7 +22,7 @@ const AccountPage = () => {
   const performTransaction = ( amount: number ) => {
     const asyncFun = async() => {
       interface IAPIResponse { success: boolean, balance: number, msg: string };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { id:ID, pw:PW, amount: NBalance });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { id:ID, pw:PW, amount: amount });
       setNTransaction(0);
       if (!data.success) {
         window.alert('Transaction Failed:' + data.msg);
