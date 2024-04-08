@@ -8,7 +8,7 @@ interface IAPIResponse  { id: number, title: string, content: string }
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
-  const [ NPostCount, setNPostCount ] = React.useState<number>(0);
+  const [ NPostCount, setNPostCount ] = React.useState<number>(1);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
 
@@ -44,6 +44,24 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
+  const modifyPost = (id: string, altTitle: string, altContent: string) => {
+    const asyncFun = async() => {
+      await axios.post( SAPIBase + '/feed/modifyFeed', { id: id, title: altTitle, content: altContent } );
+      setLAPIResponse(() => (
+        LAPIResponse.map((value) => {
+          const match = (value.id === parseInt(id));
+          if (match) {
+              return {id: value.id, title: altTitle, content: altContent};
+          }
+          return value;
+      }))
+      
+      );
+
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
   return (
     <div className="Feed">
       <Header/>
@@ -60,6 +78,17 @@ const FeedPage = (props: {}) => {
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
+            <button onClick={(e) => {
+              const altTitle=window.prompt("enter new title",val.title);
+              const altContent=window.prompt("enter new context",val.content);
+
+              console.log(LAPIResponse);
+
+              if(altTitle && altContent){
+                modifyPost(`${val.id}`,`${altTitle}`,`${altContent}`);
+              }
+            }}>수정</button>
+            
           </div>
         ) }
         <div className={"feed-item-add"}>
