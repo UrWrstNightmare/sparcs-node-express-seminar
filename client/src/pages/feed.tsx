@@ -11,7 +11,7 @@ const FeedPage = (props: {}) => {
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
-
+  
   React.useEffect( () => {
     let BComponentExited = false;
     const asyncFun = async () => {
@@ -44,6 +44,22 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
+  const editPost = (id: string, currentTitle: string, currentContent: string ) => {
+    const newTitle = window.prompt("Enter a new title", currentTitle);
+    const newContent = window.prompt("Enter the new content", currentContent);
+    if (newTitle !== null && newContent !== null) {
+      const asyncFun = async () => {
+        await axios.post(SAPIBase + '/feed/editFeed', { id: id, title: newTitle, content: newContent });
+        setLAPIResponse((LAPIResponse) => 
+          LAPIResponse.map(val => 
+            val.id === parseInt(id) ? {...val, title: newTitle, content: newContent } : val
+          )
+        )
+      }
+      asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+    }
+  }
+
   return (
     <div className="Feed">
       <Header/>
@@ -58,10 +74,12 @@ const FeedPage = (props: {}) => {
         { LAPIResponse.map( (val, i) =>
           <div key={i} className={"feed-item"}>
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
+            <button onClick ={() => editPost(`${val.id}`, val.title, val.content)}>Edit</button>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
           </div>
         ) }
+        
         <div className={"feed-item-add"}>
           Title: <input type={"text"} value={SNewPostTitle} onChange={(e) => setSNewPostTitle(e.target.value)}/>
           &nbsp;&nbsp;&nbsp;&nbsp;
