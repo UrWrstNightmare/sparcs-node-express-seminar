@@ -4,7 +4,7 @@ import { SAPIBase } from "../tools/api";
 import Header from "../components/header";
 import "./css/feed.css";
 
-interface IAPIResponse  { id: number, title: string, content: string }
+interface IAPIResponse  { id: number, title: string, content: string, rating: number }
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
@@ -38,8 +38,10 @@ const FeedPage = (props: {}) => {
   const deletePost = (id: string) => {
     const asyncFun = async () => {
       // One can set X-HTTP-Method header to DELETE to specify deletion as well
-      await axios.post( SAPIBase + '/feed/deleteFeed', { id: id } );
-      setNPostCount(Math.max(NPostCount - 1, 0));
+      const confirmed =window.confirm("Really want to DELETE ?!?!");
+      if (confirmed){
+        await axios.post( SAPIBase + '/feed/deleteFeed', { id: id } );
+        setNPostCount(Math.max(NPostCount - 1, 0));}
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
@@ -56,6 +58,19 @@ const FeedPage = (props: {}) => {
       setLAPIResponse(updatedPosts);
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+  const ratePost = (id: string, rating: number) => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/feed/rateFeed', { id: id, rating: rating } );
+      const updatedPosts = LAPIResponse.map( (val) => {
+        if (val.id === parseInt(id)) {
+          val.rating = rating;
+        }
+        return val;
+      });
+      setLAPIResponse(updatedPosts);
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURRED! ${e}`));
   }
 
   return (
@@ -79,8 +94,22 @@ const FeedPage = (props: {}) => {
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
+            <div className={"feed-rating"}>
+              Rating: {val.rating}
+              {[1, 2, 3, 4, 5].map((ratingValue) => (
+                <span 
+                  key={ratingValue}
+                  style={{ cursor: "pointer", marginLeft: "5px" }}
+                  onClick={() => ratePost(`${val.id}`, ratingValue)}
+                >
+                  {ratingValue <= val.rating ? "★" : "☆"}
+                </span>
+              ))}
+            </div>
           </div>
+          
         ) }
+
         <div className={"feed-item-add"}>
           Title: <input type={"text"} value={SNewPostTitle} onChange={(e) => setSNewPostTitle(e.target.value)}/>
           &nbsp;&nbsp;&nbsp;&nbsp;

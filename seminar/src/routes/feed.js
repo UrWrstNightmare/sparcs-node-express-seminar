@@ -46,6 +46,13 @@ class FeedDB {
             return value;
         })
     }
+    rateItem = (id, rating) => {
+        const itemToUpdate = this.#LDataDB.find(item => item.id === id);
+        if (!itemToUpdate) return false;
+        itemToUpdate.rating = rating;
+        return true;
+    };
+    
 }
 
 const feedDBInst = FeedDB.getInst();
@@ -91,5 +98,16 @@ router.post('/editFeed', (req, res) => {
         return res.status(500).json({ error: e });
     }
 })
+router.post('/rateFeed', (req, res) => {
+    try {
+        const { id, rating } = req.body;
+        const updateResult = feedDBInst.rateItem(parseInt(id), rating);
+        if (!updateResult) return res.status(500).json({ error: "Failed to update rating" });
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+});
+
 
 module.exports = router;
