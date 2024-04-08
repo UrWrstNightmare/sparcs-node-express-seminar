@@ -5,14 +5,15 @@ import {SAPIBase} from "../tools/api";
 import "./css/account.css";
 
 const AccountPage = () => {
-  const [ SAPIKEY, setSAPIKEY ] = React.useState<string>("");
+  const [ username, setUsername ] = React.useState<string>("");
+  const [ password, setPassword ] = React.useState<string>("");
   const [ NBalance, setNBalance ] = React.useState<number | "Not Authorized">("Not Authorized");
   const [ NTransaction, setNTransaction ] = React.useState<number | ''>(0);
 
   const getAccountInformation = () => {
     const asyncFun = async() => {
       interface IAPIResponse { balance: number };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { credential: SAPIKEY });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { ID: username, PW: password });
       setNBalance(data.balance);
     }
     asyncFun().catch((e) => window.alert(`AN ERROR OCCURED: ${e}`));
@@ -22,7 +23,7 @@ const AccountPage = () => {
     const asyncFun = async() => {
       if (amount === '') return;
       interface IAPIResponse { success: boolean, balance: number, msg: string };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: SAPIKEY, amount: amount });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { ID: username, PW: password, amount: amount });
       setNTransaction(0);
       if (!data.success) {
         window.alert('Transaction Failed:' + data.msg);
@@ -40,7 +41,8 @@ const AccountPage = () => {
       <Header/>
       <h2>Account</h2>
       <div className={"account-token-input"}>
-        Enter API Key: <input type={"text"} value={SAPIKEY} onChange={e => setSAPIKEY(e.target.value)}/>
+        Enter Username: <input type={"text"} value={username} onChange={e => setUsername(e.target.value)}/> &nbsp;&nbsp;
+        Enter Password: <input type={"text"} value={password} onChange={e => setPassword(e.target.value)}/>
         <button onClick={e => getAccountInformation()}>GET</button>
       </div>
       <div className={"account-bank"}>
