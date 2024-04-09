@@ -1,76 +1,104 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
 class FeedDB {
-    static _inst_;
-    static getInst = () => {
-        if ( !FeedDB._inst_ ) FeedDB._inst_ = new FeedDB();
-        return FeedDB._inst_;
-    }
+  static _inst_;
+  static getInst = () => {
+    if (!FeedDB._inst_) FeedDB._inst_ = new FeedDB();
+    return FeedDB._inst_;
+  };
 
-    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body" }];
+  #id = 1;
+  #itemCount = 0;
+  #LDataDB = [];
 
-    constructor() { console.log("[Feed-DB] DB Init Completed"); }
+  constructor() {
+    console.log("[Feed-DB] DB Init Completed");
+  }
 
-    selectItems = ( count ) => {
-        if (count > this.#itemCount) return { success: false, data: "Too many items queried"  };
-        if (count < 0) return { success: false, data: "Invalid count provided" };
-        else return { success: true, data: this.#LDataDB.slice(0, count) }
-    }
+  selectItems = (count) => {
+    if (count > this.#itemCount)
+      return { success: false, data: "Too many items queried" };
+    if (count < 0) return { success: false, data: "Invalid count provided" };
+    else return { success: true, data: this.#LDataDB.slice(0, count) };
+  };
 
-    insertItem = ( item ) => {
-        const { title, content } = item;
-        this.#LDataDB.push({ id: this.#id, title, content });
-        this.#id++; this.#itemCount++;
-        return true;
-    }
+  insertItem = (item) => {
+    const { title, content, type } = item;
+    this.#LDataDB.push({ id: this.#id, title, content, type });
+    this.#id++;
+    this.#itemCount++;
+    return true;
+  };
 
-    deleteItem = ( id ) => {
-        let BItemDeleted = false;
-        this.#LDataDB = this.#LDataDB.filter((value) => {
-            const match = (value.id === id);
-            if (match) BItemDeleted = true;
-            return !match;
-        });
-        if (BItemDeleted) id--;
-        return BItemDeleted;
-    }
+  deleteItem = (id) => {
+    let BItemDeleted = false;
+    this.#LDataDB = this.#LDataDB.filter((value) => {
+      const match = value.id === id;
+      if (match) BItemDeleted = true;
+      return !match;
+    });
+    if (BItemDeleted) id--;
+    return BItemDeleted;
+  };
+
+  editItem = (id, title, content, type) => {
+    this.#LDataDB = this.#LDataDB.map((tmp) => {
+      if (tmp.id === id) {
+        tmp.title = title;
+        tmp.content = content;
+        tmp.type = type;
+      }
+      return tmp;
+    });
+  };
 }
 
 const feedDBInst = FeedDB.getInst();
 
-router.get('/getFeed', (req, res) => {
-    try {
-        const requestCount = parseInt(req.query.count);
-        const dbRes = feedDBInst.selectItems(requestCount);
-        if (dbRes.success) return res.status(200).json(dbRes.data);
-        else return res.status(500).json({ error: dbRes.data })
-    } catch (e) {
-        return res.status(500).json({ error: e });
-    }
+router.get("/getFeed", (req, res) => {
+  try {
+    const requestCount = parseInt(req.query.count);
+    const dbRes = feedDBInst.selectItems(requestCount);
+    if (dbRes.success) return res.status(200).json(dbRes.data);
+    else return res.status(500).json({ error: dbRes.data });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
 });
 
-router.post('/addFeed', (req, res) => {
-   try {
-       const { title, content } = req.body;
-       const addResult = feedDBInst.insertItem({ title, content });
-       if (!addResult) return res.status(500).json({ error: dbRes.data })
-       else return res.status(200).json({ isOK: true });
-   } catch (e) {
-       return res.status(500).json({ error: e });
-   }
+router.post("/addFeed", (req, res) => {
+  try {
+    const { title, content, type } = req.body;
+    const addResult = feedDBInst.insertItem({ title, content, type });
+    if (!addResult) return res.status(500).json({ error: dbRes.data });
+    else return res.status(200).json({ isOK: true });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
 });
 
-router.post('/deleteFeed', (req, res) => {
-    try {
-        const { id } = req.body;
-        const deleteResult = feedDBInst.deleteItem(parseInt(id));
-        if (!deleteResult) return res.status(500).json({ error: "No item deleted" })
-        else return res.status(200).json({ isOK: true });
-    } catch (e) {
-        return res.status(500).json({ error: e });
-    }
-})
+router.post("/deleteFeed", (req, res) => {
+  try {
+    const { id } = req.body;
+    const deleteResult = feedDBInst.deleteItem(parseInt(id));
+    if (!deleteResult)
+      return res.status(500).json({ error: "No item deleted" });
+    else return res.status(200).json({ isOK: true });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
+
+router.post("/editFeed", (req, res) => {
+  try {
+    const { id, title, content, type } = req.body;
+    feedDBInst.editItem(parseInt(id), title, content, type);
+    return res.status(200).json({ isOK: true });
+  } catch (e) {
+    return res.status(500).json({ error: e });
+  }
+});
 
 module.exports = router;

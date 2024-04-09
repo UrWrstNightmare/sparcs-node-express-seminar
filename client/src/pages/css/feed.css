@@ -38,7 +38,37 @@
     font-size: 18px;
 }
 
+.edit-item {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 2px;
+    background-color: lightgray;
+    font-size: 12px;
+    right: 15px;
+    top: 50px;
+}
+
+.edit-item:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .delete-item:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+}
+
+.feed-type-dropdown {
+    display:inline;
+}
+
+.type-dropdown-list:hover {
+    background-color: lightgray;
     font-weight: bold;
     cursor: pointer;
 }
