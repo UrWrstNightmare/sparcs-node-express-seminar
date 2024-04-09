@@ -4,11 +4,11 @@ import { SAPIBase } from "../tools/api";
 import Header from "../components/header";
 import "./css/feed.css";
 
-interface IAPIResponse  { id: number, title: string, content: string }
+interface IAPIResponse  { id: number, title: string, content: string, toggle:boolean }
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
-  const [ NPostCount, setNPostCount ] = React.useState<number>(1);
+  const [ NPostCount, setNPostCount ] = React.useState<number>(1); // 처음에 example 들어있음
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
 
@@ -17,7 +17,6 @@ const FeedPage = (props: {}) => {
     const asyncFun = async () => {
       const { data } = await axios.get<IAPIResponse[]>( SAPIBase + `/feed/getFeed?count=${ NPostCount }`);
       console.log(data);
-      // const data = [ { id: 0, title: "test1", content: "Example body" }, { id: 1, title: "test2", content: "Example body" }, { id: 2, title: "test3", content: "Example body" } ].slice(0, NPostCount);
       if (BComponentExited) return;
       setLAPIResponse(data);
     };
@@ -27,7 +26,7 @@ const FeedPage = (props: {}) => {
 
   const createNewPost = () => {
     const asyncFun = async () => {
-      await axios.post( SAPIBase + '/feed/addFeed', { title: SNewPostTitle, content: SNewPostContent } );
+      await axios.post( SAPIBase + '/feed/addFeed', { title: SNewPostTitle, content: SNewPostContent, toggle:false } );
       setNPostCount(NPostCount + 1);
       setSNewPostTitle("");
       setSNewPostContent("");
@@ -46,18 +45,32 @@ const FeedPage = (props: {}) => {
 
   const modifyPost = (id: string, altTitle: string, altContent: string) => {
     const asyncFun = async() => {
-      await axios.post( SAPIBase + '/feed/modifyFeed', { id: id, title: altTitle, content: altContent } );
+      await axios.post( SAPIBase + '/feed/modifyFeed', { id: id, title: altTitle, content: altContent} );
       setLAPIResponse(() => (
         LAPIResponse.map((value) => {
           const match = (value.id === parseInt(id));
           if (match) {
-              return {id: value.id, title: altTitle, content: altContent};
+              return {id: value.id, title: altTitle, content: altContent, toggle:value.toggle};
           }
           return value;
-      }))
-      
-      );
+      })));
 
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
+  const togglePost = (id: string) => {
+    const asyncFun = async () => {
+      // One can set X-HTTP-Method header to DELETE to specify deletion as well
+      await axios.post( SAPIBase + '/feed/toggleFeed', { id: id } );
+      setLAPIResponse(() => (
+        LAPIResponse.map((value) => {
+          const match = (value.id === parseInt(id));
+          if (match) {
+            return {id: value.id, title: value.title, content: value.content, toggle:!value.toggle};
+          }
+          return value;
+      })));
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
@@ -75,6 +88,7 @@ const FeedPage = (props: {}) => {
       <div className={"feed-list"}>
         { LAPIResponse.map( (val, i) =>
           <div key={i} className={"feed-item"}>
+            <p onClick={(e) => togglePost(`${val.id}`)}>{val.toggle?"★":"☆"}</p> {/* ?"★":"☆" */}
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>

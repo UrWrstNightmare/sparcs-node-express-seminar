@@ -9,7 +9,7 @@ class FeedDB {
         return FeedDB._inst_;
     }
 
-    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body" }];
+    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body", toggle: false }];
 
     constructor() { console.log("[Feed-DB] DB Init Completed"); }
 
@@ -21,7 +21,7 @@ class FeedDB {
 
     insertItem = ( item ) => {
         const { title, content } = item;
-        this.#LDataDB.push({ id: this.#id, title, content });
+        this.#LDataDB.push({ id: this.#id, title, content, toggle:false });
         this.#id++; this.#itemCount++;
         return true;
     }
@@ -39,20 +39,30 @@ class FeedDB {
 
     modifyItem = (item) => {
         const { id, title, content } = item;
-        console.log(id,title,content, typeof id, typeof parseInt(id));
         let BItemModified = false;
 
         this.#LDataDB = this.#LDataDB.map((value) => {
             const match = (value.id === parseInt(id));
-            console.log(value.id, id);
             if (match) {
-                console.log("변경")
                 BItemModified=true;
-                return {id: value.id, title: title, content: content};
+                return {id: value.id, title, content, toggle: value.toggle};
             }
             return value;
         });
         return BItemModified;
+    }
+
+    toggleItem = (id) => {
+        let BItemToggled = false;
+        this.#LDataDB = this.#LDataDB.map((value) => {
+            const match = (value.id === id);
+            if (match) {
+                BItemToggled=true;
+                return {id: value.id, title: value.title, content:value.content, toggle: !value.toggle};
+            }
+            return value;
+        });
+        return BItemToggled;
     }
 }
 
@@ -100,6 +110,17 @@ router.post('/modifyFeed', (req, res) => {
         else return res.status(200).json({ isOK: true });
     } catch (e) {
         return res.status(500).json({ error: e });
+    }
+})
+
+router.post('/toggleFeed', (req, res) => {
+    try{
+        const {id} = req.body;
+        const toggleResult = feedDBInst.toggleItem(parseInt(id));
+        if (!toggleResult) return res.status(500).json({ error: "No item deleted" })
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({error: e });
     }
 })
 
