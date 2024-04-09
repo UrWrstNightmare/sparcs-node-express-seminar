@@ -11,7 +11,6 @@ const FeedPage = (props: {}) => {
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
-  const [ selectedFile, setSelectedFile ] = React.useState<File | null>(null);
   
   React.useEffect( () => {
     let BComponentExited = false;
@@ -28,21 +27,14 @@ const FeedPage = (props: {}) => {
 
   const createNewPost = () => {
     const asyncFun = async () => {
-      let { data: postResponse } = await axios.post( SAPIBase + '/feed/addFeed', { title: SNewPostTitle, content: SNewPostContent } );
-      if (selectedFile && postResponse.isOK) { //check if there is file to be uploaded and post successfully created
-        const formData = new FormData();
-        formData.append('image', selectedFile); //adds new file with key 'image' value 'selectedFile'
-        formData.append('postId', postResponse.id);
-        await axios.post(SAPIBase + '/feed/uploadImage', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          } 
-        }); //Sends HTTP header explaining data is multipart and from form 
-      }
+      await axios.post(SAPIBase + '/feed/addFeed', {
+        title: SNewPostTitle,
+        content: SNewPostContent,
+        imagePath: '/uploads/dongbang.jpeg', 
+      });
       setNPostCount(NPostCount + 1);
       setSNewPostTitle("");
-      setSNewPostContent("");
-      setSelectedFile(null);
+
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
@@ -89,8 +81,7 @@ const FeedPage = (props: {}) => {
             <button onClick ={() => editPost(`${val.id}`, val.title, val.content, val.imagePath)}>Edit</button>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
-            {val.imagePath && <img src={SAPIBase + val.imagePath} alt={val.title} className={"feed-image}"}/>}
-          </div>
+            {val.imagePath && <img src={SAPIBase + '/uploads/dongbang.jpeg'} alt={val.title} className={"feed-image"}/>}          </div>
         ) }
         
         <div className={"feed-item-add"}>
@@ -98,11 +89,6 @@ const FeedPage = (props: {}) => {
           &nbsp;&nbsp;&nbsp;&nbsp;
           Content: <input type={"text"} value={SNewPostContent} onChange={(e) => setSNewPostContent(e.target.value)}/>
           <div className={"post-add-button"} onClick={(e) => createNewPost()}>Add Post!</div>
-          Upload Image: <input type="file" onChange={(e) => {
-            if (e.target.files && e.target.files.length > 0) { //if at least one file uploaded
-              setSelectedFile(e.target.files[0]); //update selectedFile with first file uploaded
-            }
-          }}/>
         </div>
       </div>
     </div>

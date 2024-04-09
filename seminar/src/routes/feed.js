@@ -33,11 +33,11 @@ class FeedDB {
         else return { success: true, data: this.#LDataDB.slice(0, count) }
     }
 
-    insertItem = ( item, imagePath = '' ) => {
-        const { title, content } = item;
+    insertItem = (item) => {
+        const { title, content, imagePath } = item;
         this.#LDataDB.push({ id: this.#id, title, content, imagePath });
         this.#id++; this.#itemCount++;
-        return {success: true, id: this.#id-1 };
+        return { success: true, id: this.#id - 1 };
     }
 
     deleteItem = ( id ) => {
@@ -80,32 +80,16 @@ router.get('/getFeed', (req, res) => {
 });
 
 router.post('/addFeed', (req, res) => {
-   try {
-       const { title, content } = req.body;
-       const addResult = feedDBInst.insertItem({ title, content });
-       if (!addResult.success) return res.status(500).json({ error: dbRes.data })
-       else return res.status(200).json({ isOK: true, id: addResult.id });
-   } catch (e) {
-       return res.status(500).json({ error: e });
-   }
+    try {
+      const { title, content, imagePath } = req.body;
+      const addResult = feedDBInst.insertItem({ title, content, imagePath });
+      if (!addResult.success) return res.status(500).json({ error: dbRes.data })
+      else return res.status(200).json({ isOK: true, id: addResult.id });
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
 });
 
-router.post('/uploadImage', upload.single('image'), (req, res) => {
-    console.log("Uploaded file:", req.file);
-    console.log("Request body:", req.body);
-    try {
-        const postId = req.body.postId;
-        const filePath = req.file.path;
-        const itemToUpdate = feedDBInst.editItem(parseInt(postId), { imagePath: filePath });
-        if (itemToUpdate) {
-            res.status(200).json({ isOK: true, message: 'Image uploaded and post updated.', filePath: filePath });
-        } else {
-            res.status(404).json({ error: 'Post not found for given ID' })
-        }
-    } catch (e) {
-        return res.status(500).json({error: e});
-    }
-})
 
 router.post('/deleteFeed', (req, res) => {
     try {
