@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const statusRouter = require('./routes/status');
@@ -10,6 +11,9 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
+
+app.use('/uploads', express.static('uploads'));
+app.use('/static', express.static(path.join(__dirname, 'public'))); // Serve other static files
 
 const whitelist = ['http://localhost:3000'];
 const corsOptions = {

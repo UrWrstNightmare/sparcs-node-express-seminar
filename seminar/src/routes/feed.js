@@ -1,4 +1,18 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        const uploadsDir = path.join(__dirname , 'uploads');
+        cb(null, 'uploads/'); // Make sure this uploads directory exists
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Naming the file uniquely
+    }
+});
+
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -19,11 +33,11 @@ class FeedDB {
         else return { success: true, data: this.#LDataDB.slice(0, count) }
     }
 
-    insertItem = ( item ) => {
+    insertItem = ( item, imagePath = '' ) => {
         const { title, content } = item;
-        this.#LDataDB.push({ id: this.#id, title, content });
+        this.#LDataDB.push({ id: this.#id, title, content, imagePath });
         this.#id++; this.#itemCount++;
-        return true;
+        return {success: true, id: this.#id-1 };
     }
 
     deleteItem = ( id ) => {
@@ -37,10 +51,18 @@ class FeedDB {
         return BItemDeleted;
     }
 
-    editItem = (id, title, content) => {
-        this.#LDataDB = this.#LDataDB.map((val) => (
-            val.id === id ? {...val, title: title, content: content} : val
-        ));
+    editItem = (id, item) => {
+        const { title, content, imagePath } = item;
+        let itemUpdated = false;
+        this.#LDataDB = this.#LDataDB.map((val) => {
+            if (val.id === id) {
+                itemUpdated = true;
+                return { ...val, title, content, imagePath: imagePath || val.imagePath };
+            } else {
+                return val;
+            }
+        });
+        return itemUpdated;
     }
 }
 
@@ -61,12 +83,29 @@ router.post('/addFeed', (req, res) => {
    try {
        const { title, content } = req.body;
        const addResult = feedDBInst.insertItem({ title, content });
-       if (!addResult) return res.status(500).json({ error: dbRes.data })
-       else return res.status(200).json({ isOK: true });
+       if (!addResult.success) return res.status(500).json({ error: dbRes.data })
+       else return res.status(200).json({ isOK: true, id: addResult.id });
    } catch (e) {
        return res.status(500).json({ error: e });
    }
 });
+
+router.post('/uploadImage', upload.single('image'), (req, res) => {
+    console.log("Uploaded file:", req.file);
+    console.log("Request body:", req.body);
+    try {
+        const postId = req.body.postId;
+        const filePath = req.file.path;
+        const itemToUpdate = feedDBInst.editItem(parseInt(postId), { imagePath: filePath });
+        if (itemToUpdate) {
+            res.status(200).json({ isOK: true, message: 'Image uploaded and post updated.', filePath: filePath });
+        } else {
+            res.status(404).json({ error: 'Post not found for given ID' })
+        }
+    } catch (e) {
+        return res.status(500).json({error: e});
+    }
+})
 
 router.post('/deleteFeed', (req, res) => {
     try {

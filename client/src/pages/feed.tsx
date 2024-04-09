@@ -4,13 +4,14 @@ import { SAPIBase } from "../tools/api";
 import Header from "../components/header";
 import "./css/feed.css";
 
-interface IAPIResponse  { id: number, title: string, content: string }
+interface IAPIResponse  { id: number, title: string, content: string, imagePath?: string }
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
+  const [ selectedFile, setSelectedFile ] = React.useState<File | null>(null);
   
   React.useEffect( () => {
     let BComponentExited = false;
@@ -27,10 +28,21 @@ const FeedPage = (props: {}) => {
 
   const createNewPost = () => {
     const asyncFun = async () => {
-      await axios.post( SAPIBase + '/feed/addFeed', { title: SNewPostTitle, content: SNewPostContent } );
+      let { data: postResponse } = await axios.post( SAPIBase + '/feed/addFeed', { title: SNewPostTitle, content: SNewPostContent } );
+      if (selectedFile && postResponse.isOK) { //check if there is file to be uploaded and post successfully created
+        const formData = new FormData();
+        formData.append('image', selectedFile); //adds new file with key 'image' value 'selectedFile'
+        formData.append('postId', postResponse.id);
+        await axios.post(SAPIBase + '/feed/uploadImage', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          } 
+        }); //Sends HTTP header explaining data is multipart and from form 
+      }
       setNPostCount(NPostCount + 1);
       setSNewPostTitle("");
       setSNewPostContent("");
+      setSelectedFile(null);
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
@@ -44,12 +56,12 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
-  const editPost = (id: string, currentTitle: string, currentContent: string ) => {
+  const editPost = (id: string, currentTitle: string, currentContent: string, imagePath?: string ) => {
     const newTitle = window.prompt("Enter a new title", currentTitle);
     const newContent = window.prompt("Enter the new content", currentContent);
     if (newTitle !== null && newContent !== null) {
       const asyncFun = async () => {
-        await axios.post(SAPIBase + '/feed/editFeed', { id: id, title: newTitle, content: newContent });
+        await axios.post(SAPIBase + '/feed/editFeed', { id: id, title: newTitle, content: newContent, imagePath: imagePath });
         setLAPIResponse((LAPIResponse) => 
           LAPIResponse.map(val => 
             val.id === parseInt(id) ? {...val, title: newTitle, content: newContent } : val
@@ -74,9 +86,10 @@ const FeedPage = (props: {}) => {
         { LAPIResponse.map( (val, i) =>
           <div key={i} className={"feed-item"}>
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
-            <button onClick ={() => editPost(`${val.id}`, val.title, val.content)}>Edit</button>
+            <button onClick ={() => editPost(`${val.id}`, val.title, val.content, val.imagePath)}>Edit</button>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
+            {val.imagePath && <img src={SAPIBase + val.imagePath} alt={val.title} className={"feed-image}"}/>}
           </div>
         ) }
         
@@ -85,6 +98,11 @@ const FeedPage = (props: {}) => {
           &nbsp;&nbsp;&nbsp;&nbsp;
           Content: <input type={"text"} value={SNewPostContent} onChange={(e) => setSNewPostContent(e.target.value)}/>
           <div className={"post-add-button"} onClick={(e) => createNewPost()}>Add Post!</div>
+          Upload Image: <input type="file" onChange={(e) => {
+            if (e.target.files && e.target.files.length > 0) { //if at least one file uploaded
+              setSelectedFile(e.target.files[0]); //update selectedFile with first file uploaded
+            }
+          }}/>
         </div>
       </div>
     </div>
