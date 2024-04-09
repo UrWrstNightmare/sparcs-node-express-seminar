@@ -1,19 +1,4 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        const uploadsDir = path.join(__dirname , 'uploads');
-        cb(null, 'uploads/'); // Make sure this uploads directory exists
-    },
-    filename: function(req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Naming the file uniquely
-    }
-});
-
-const upload = multer({ storage: storage });
-
 const router = express.Router();
 
 class FeedDB {
@@ -81,14 +66,18 @@ router.get('/getFeed', (req, res) => {
 
 router.post('/addFeed', (req, res) => {
     try {
-      const { title, content, imagePath } = req.body;
+      const { title, content } = req.body;
+      const imagePath = '/static/dongbang.jpeg'; // Use the existing image file path
       const addResult = feedDBInst.insertItem({ title, content, imagePath });
-      if (!addResult.success) return res.status(500).json({ error: dbRes.data })
-      else return res.status(200).json({ isOK: true, id: addResult.id });
+      if (!addResult.success) {
+        return res.status(500).json({ error: dbRes.data });
+      } else {
+        return res.status(200).json({ isOK: true, id: addResult.id });
+      }
     } catch (e) {
       return res.status(500).json({ error: e });
     }
-});
+  });
 
 
 router.post('/deleteFeed', (req, res) => {
@@ -104,12 +93,12 @@ router.post('/deleteFeed', (req, res) => {
 
 router.post('/editFeed', (req, res) => {
     try {
-        const {id, title, content } = req.body;
-        feedDBInst.editItem(parseInt(id), { title, content });
-        return res.status(200).json({ isOK: true });
+      const { id, title, content } = req.body;
+      feedDBInst.editItem(parseInt(id), { title, content });
+      return res.status(200).json({ isOK: true });
     } catch (e) {
-        return res.status(500).json({ error: e });
+      return res.status(500).json({ error: e });
     }
-})
+});
 
 module.exports = router;

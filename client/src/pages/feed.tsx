@@ -25,19 +25,18 @@ const FeedPage = (props: {}) => {
     return () => { BComponentExited = true; }
   }, [ NPostCount ]);
 
-  const createNewPost = () => {
-    const asyncFun = async () => {
+  const createNewPost = async () => {
+    try {
       await axios.post(SAPIBase + '/feed/addFeed', {
         title: SNewPostTitle,
         content: SNewPostContent,
-        imagePath: '/uploads/dongbang.jpeg', 
       });
       setNPostCount(NPostCount + 1);
-      setSNewPostTitle("");
-
+      setSNewPostTitle('');
+    } catch (error) {
+      window.alert(`AN ERROR OCCURRED! ${error}`);
     }
-    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
-  }
+  };
 
   const deletePost = (id: string) => {
     const asyncFun = async () => {
@@ -79,9 +78,10 @@ const FeedPage = (props: {}) => {
           <div key={i} className={"feed-item"}>
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <button onClick ={() => editPost(`${val.id}`, val.title, val.content, val.imagePath)}>Edit</button>
-            <h3 className={"feed-title"}>{ val.title }</h3>
-            <p className={"feed-body"}>{ val.content }</p>
-            {val.imagePath && <img src={SAPIBase + '/uploads/dongbang.jpeg'} alt={val.title} className={"feed-image"}/>}          </div>
+            <h3 className={"feed-title"}>{val.title}</h3>
+            <p className={"feed-body"}>{val.content}</p>
+            <img src={SAPIBase + val.imagePath} alt={val.title} className={"feed-image"} />
+          </div>
         ) }
         
         <div className={"feed-item-add"}>

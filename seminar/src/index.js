@@ -12,18 +12,18 @@ const port = process.env.PORT;
 
 app.use(express.json());
 
-app.use('/uploads', express.static('uploads'));
-app.use('/static', express.static(path.join(__dirname, 'public'))); // Serve other static files
+app.use('/static', express.static(path.join(__dirname, '/public'))); // Serve other static files
 
 const whitelist = ['http://localhost:3000'];
 const corsOptions = {
-    origin: (origin, callback) => {
-        console.log('[REQUEST-CORS] Request from origin: ', origin);
-        if (!origin || whitelist.indexOf(origin) !== -1) callback(null, true)
-        else callback(new Error('Not Allowed by CORS'));
-    },
-    credentials: true,
+  origin: (origin, callback) => {
+    console.log('[REQUEST-CORS] Request from origin: ', origin);
+    // Allow all origins for testing purposes
+    callback(null, true);
+  },
+  credentials: true,
 }
+
 
 app.use(cors(corsOptions));
 
