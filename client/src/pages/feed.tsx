@@ -6,11 +6,14 @@ import "./css/feed.css";
 
 interface IAPIResponse  { id: number, title: string, content: string }
 
+
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
   const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
+  const [ EditDummy, setEditDummy ] = React.useState<number>(0);
+  const [ EditContent, setEditContent ] = React.useState<string>("");
 
   React.useEffect( () => {
     let BComponentExited = false;
@@ -23,7 +26,7 @@ const FeedPage = (props: {}) => {
     };
     asyncFun().catch((e) => window.alert(`Error while running API Call: ${e}`));
     return () => { BComponentExited = true; }
-  }, [ NPostCount ]);
+  }, [ NPostCount, EditDummy ]);
 
   const createNewPost = () => {
     const asyncFun = async () => {
@@ -44,6 +47,16 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
 
+  const editPost = (id: string, content:string) => {
+    const asyncFun = async () => {
+      // One can set X-HTTP-Method header to DELETE to specify deletion as well
+      await axios.post( SAPIBase + '/feed/editFeed', { id: id, content: content } );
+      setEditDummy(EditDummy + 1);
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+    setEditContent("");
+  }
+
   return (
     <div className="Feed">
       <Header/>
@@ -60,6 +73,10 @@ const FeedPage = (props: {}) => {
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
+            <div className="editinput">
+              <input type={"text"} value={EditContent} onChange={(e) => setEditContent(e.target.value)} placeholder="Wanna Edit?" />
+              <button onClick={(e) => editPost(`${val.id}`, EditContent)}>✏️</button>
+            </div>
           </div>
         ) }
         <div className={"feed-item-add"}>

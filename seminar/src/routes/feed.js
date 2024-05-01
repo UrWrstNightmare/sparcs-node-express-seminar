@@ -13,6 +13,8 @@ class FeedDB {
 
     constructor() { console.log("[Feed-DB] DB Init Completed"); }
 
+    
+
     selectItems = ( count ) => {
         if (count > this.#itemCount) return { success: false, data: "Too many items queried"  };
         if (count < 0) return { success: false, data: "Invalid count provided" };
@@ -26,6 +28,11 @@ class FeedDB {
         return true;
     }
 
+    editItem = ( id, content ) => {
+        this.#LDataDB.find(x => x.id == parseInt(id)).content = content;
+        return true;
+    }
+    
     deleteItem = ( id ) => {
         let BItemDeleted = false;
         this.#LDataDB = this.#LDataDB.filter((value) => {
@@ -61,6 +68,18 @@ router.post('/addFeed', (req, res) => {
        return res.status(500).json({ error: e });
    }
 });
+
+router.post('/editFeed', (req, res) => {
+    
+    try {   
+        const { id, content } = req.body;
+        const editResult = feedDBInst.editItem(id, content);
+        if (!editResult) return res.status(500).json({ error: dbRes.data })
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+ });
 
 router.post('/deleteFeed', (req, res) => {
     try {
