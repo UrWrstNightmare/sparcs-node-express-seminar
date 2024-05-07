@@ -9,7 +9,7 @@ class FeedDB {
         return FeedDB._inst_;
     }
 
-    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body" }];
+    #id = 1; #itemCount = 1; #LDataDB = [{ id: 0, title: "test1", content: "Example body", joayo: 0}];
 
     constructor() { console.log("[Feed-DB] DB Init Completed"); }
 
@@ -23,7 +23,7 @@ class FeedDB {
 
     insertItem = ( item ) => {
         const { title, content } = item;
-        this.#LDataDB.push({ id: this.#id, title, content });
+        this.#LDataDB.push({ id: this.#id, title, content, joayo: 0 });
         this.#id++; this.#itemCount++;
         return true;
     }
@@ -42,6 +42,11 @@ class FeedDB {
         });
         if (BItemDeleted) id--;
         return BItemDeleted;
+    }
+
+    joayo = ( id ) => {
+        this.#LDataDB.find(x => x.id == parseInt(id)).joayo += 1;
+        return true;
     }
 }
 
@@ -92,4 +97,15 @@ router.post('/deleteFeed', (req, res) => {
     }
 })
 
+
+router.post('/joayo', (req, res) => {
+    try {
+        const { id } = req.body;
+        const joayoResult = feedDBInst.joayo(id);
+        if (!joayoResult) return res.status(500).json({ error: "Joayo Failed.." })
+        else return res.status(200).json({ isOK: true });
+    } catch (e) {
+        return res.status(500).json({ error: e });
+    }
+})
 module.exports = router;

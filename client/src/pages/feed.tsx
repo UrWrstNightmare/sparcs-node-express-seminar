@@ -4,7 +4,7 @@ import { SAPIBase } from "../tools/api";
 import Header from "../components/header";
 import "./css/feed.css";
 
-interface IAPIResponse  { id: number, title: string, content: string }
+interface IAPIResponse  { id: number, title: string, content: string, joayo: number }
 
 
 const FeedPage = (props: {}) => {
@@ -26,7 +26,7 @@ const FeedPage = (props: {}) => {
     };
     asyncFun().catch((e) => window.alert(`Error while running API Call: ${e}`));
     return () => { BComponentExited = true; }
-  }, [ NPostCount, EditDummy ]);
+  }, [ NPostCount, EditDummy]);
 
   const createNewPost = () => {
     const asyncFun = async () => {
@@ -56,7 +56,14 @@ const FeedPage = (props: {}) => {
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
     setEditContent("");
   }
-
+  const plusJoayo = (id: string) => {
+    const asyncFun = async () => {
+      // One can set X-HTTP-Method header to DELETE to specify deletion as well
+      await axios.post( SAPIBase + '/feed/joayo', { id: id } );
+      setEditDummy(EditDummy+1);
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
   return (
     <div className="Feed">
       <Header/>
@@ -72,6 +79,10 @@ const FeedPage = (props: {}) => {
           <div key={i} className={"feed-item"}>
             <div className={"delete-item"} onClick={(e) => deletePost(`${val.id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
+            <div className={"joayo"}>
+              <button onClick={(e) => plusJoayo(`${val.id}`)}>👍</button>
+              <h3 className={"joayo-num"}>{ `${val.joayo}` }</h3>
+            </div>
             <p className={"feed-body"}>{ val.content }</p>
             <div className="editinput">
               <input type={"text"} value={EditContent} onChange={(e) => setEditContent(e.target.value)} placeholder="Wanna Edit?" />
