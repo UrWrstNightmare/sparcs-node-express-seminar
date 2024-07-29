@@ -5,14 +5,15 @@ import {SAPIBase} from "../tools/api";
 import "./css/account.css";
 
 const AccountPage = () => {
-  const [ SAPIKEY, setSAPIKEY ] = React.useState<string>("");
+  const [ SUSERID, setSUSERID ] = React.useState<string>("");
+  const [ SUSERPW, setSUSERPW ] = React.useState<string>("");
   const [ NBalance, setNBalance ] = React.useState<number | "Not Authorized">("Not Authorized");
   const [ NTransaction, setNTransaction ] = React.useState<number | ''>(0);
 
   const getAccountInformation = () => {
     const asyncFun = async() => {
       interface IAPIResponse { balance: number };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { credential: SAPIKEY });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/getInfo', { credential: {SUSERID, SUSERPW}})
       setNBalance(data.balance);
     }
     asyncFun().catch((e) => window.alert(`AN ERROR OCCURED: ${e}`));
@@ -22,7 +23,7 @@ const AccountPage = () => {
     const asyncFun = async() => {
       if (amount === '') return;
       interface IAPIResponse { success: boolean, balance: number, msg: string };
-      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: SAPIKEY, amount: amount });
+      const { data } = await axios.post<IAPIResponse>(SAPIBase + '/account/transaction', { credential: {SUSERID, SUSERPW}, amount: amount });
       setNTransaction(0);
       if (!data.success) {
         window.alert('Transaction Failed:' + data.msg);
@@ -40,7 +41,10 @@ const AccountPage = () => {
       <Header/>
       <h2>Account</h2>
       <div className={"account-token-input"}>
-        Enter API Key: <input type={"text"} value={SAPIKEY} onChange={e => setSAPIKEY(e.target.value)}/>
+        Enter User ID: <input type={"text"} value={SUSERID} onChange={e => setSUSERID(e.target.value)}/>
+        <br/>
+        Enter User Password: <input type={"text"} value={SUSERPW} onChange={e => setSUSERPW(e.target.value)}/>
+        <br/>
         <button onClick={e => getAccountInformation()}>GET</button>
       </div>
       <div className={"account-bank"}>

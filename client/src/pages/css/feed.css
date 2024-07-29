@@ -30,12 +30,25 @@
     font-weight: 700;
 }
 
+.edit-item {
+    position: absolute;
+    right: 20px;
+    top: 12px;
+    color: green;
+    font-size: 18px;
+}
+
+.edit-item:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .delete-item {
     position: absolute;
     right: 15px;
     top: 12px;
     color: red;
-    font-size: 18px;
+    font-size: 50px;
 }
 
 .delete-item:hover {

@@ -4,14 +4,16 @@ import { SAPIBase } from "../tools/api";
 import Header from "../components/header";
 import "./css/feed.css";
 
-interface IAPIResponse  { _id: string, title: string, content: string, itemViewCnt: number }
+interface IAPIResponse  { _id: string, title: string, content: string, itemViewCnt: number, star: binary}
 
 const FeedPage = (props: {}) => {
   const [ LAPIResponse, setLAPIResponse ] = React.useState<IAPIResponse[]>([]);
   const [ NPostCount, setNPostCount ] = React.useState<number>(0);
   const [ SNewPostTitle, setSNewPostTitle ] = React.useState<string>("");
-  const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");
+  const [ SNewPostContent, setSNewPostContent ] = React.useState<string>("");  
   const [ SSearchItem, setSSearchItem ] = React.useState<string>("");
+  const [ NEditPostID, setNEditPostID ] = React.useState<number>(0);
+  const [ SEditPostContent, setSEditPostContent ] = React.useState<string>("");
 
   React.useEffect( () => {
     let BComponentExited = false;
@@ -32,6 +34,22 @@ const FeedPage = (props: {}) => {
       setNPostCount(NPostCount + 1);
       setSNewPostTitle("");
       setSNewPostContent("");
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
+  }
+
+  const editPost = () => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/feed/editFeed', {id: NEditPostID, content: SEditPostContent});
+      setNEditPostID(NEditPostID + 1);
+      setSEditPostContent("");
+    }
+    asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`))
+  }
+
+  const starPost = (id) => {
+    const asyncFun = async () => {
+      await axios.post( SAPIBase + '/feed/starFeed', {id: id} );
     }
     asyncFun().catch(e => window.alert(`AN ERROR OCCURED! ${e}`));
   }
@@ -67,6 +85,13 @@ const FeedPage = (props: {}) => {
             <div className={"delete-item"} onClick={(e) => deletePost(`${val._id}`)}>ⓧ</div>
             <h3 className={"feed-title"}>{ val.title }</h3>
             <p className={"feed-body"}>{ val.content }</p>
+            <div className={"edit-post"}>
+              <input type={"text"} value={SEditPostContent} onChange={(e) => setSEditPostContent(e.target.value)}/>
+              <button onClick={(e) => editPost(`${val.id}`, SEditPostContent)}>✎</button>
+            </div>
+            <div className={'star-post'}>
+              <button onClick={(e) => starPost(`${val.id}`)}>☆</button>
+            </div>
           </div>
         ) }
         <div className={"feed-item-add"}>
